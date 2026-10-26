@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  Share,
   ScrollView,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import {
   Search,
   MapPin,
@@ -20,15 +22,17 @@ import {
   Compass,
   X,
   Sparkles,
+  Plus,
 } from 'lucide-react-native';
 
 import {
   Location,
   CategoryType,
   CATEGORIES,
-  MOCK_LOCATIONS,
 } from '@/constants/locations';
 import { Colors } from '@/constants/theme';
+import { useExploreInfiniteQuery } from '@/services/api';
+import { SuggestSpotModal } from '@/components/SuggestSpotModal';
 
 // --- Sub-component: Location Card ---
 interface LocationCardProps {
@@ -142,52 +146,60 @@ const LocationCard: React.FC<LocationCardProps> = ({ item, onToggleSave, onShare
 
 // --- Main Explore Screen Component ---
 export default function ExploreScreen() {
-  const [locations, setLocations] = useState<Location[]>(MOCK_LOCATIONS);
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [savedLocationIds, setSavedLocationIds] = useState<Set<string>>(new Set(['loc-001']));
+  const [isSuggestModalVisible, setIsSuggestModalVisible] = useState<boolean>(false);
 
-  // Handle Save Toggle
-  const handleToggleSave = (id: string) => {
-    setLocations((prev) =>
-      prev.map((loc) =>
-        loc.id === id ? { ...loc, isSaved: !loc.isSaved } : loc
-      )
+  // TanStack Query Infinite Scrolling Hook
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useExploreInfiniteQuery(undefined, undefined, searchQuery, selectedCategory);
+
+  // Flatten paged query data
+  const locations = useMemo(() => {
+    if (!data) return [];
+    return data.pages.flatMap((page) =>
+      page.items.map((loc) => ({
+        ...loc,
+        isSaved: savedLocationIds.has(loc.id),
+      }))
     );
-  };
+  }, [data, savedLocationIds]);
 
-  // Handle Native Share
-  const handleShare = async (item: Location) => {
-    try {
-      await Share.share({
-        title: item.title,
-        message: `Check out "${item.title}" on Tourist Guide! ${item.excerpt}`,
-        url: item.sourceMetadata.sourceUrl,
-      });
-    } catch (error) {
-      console.error('Error sharing location:', error);
-    }
-  };
-
-  // Filter Locations by Search and Category
-  const filteredLocations = useMemo(() => {
-    return locations.filter((item) => {
-      const matchesCategory =
-        selectedCategory === 'All' || item.category === selectedCategory;
-      const matchesSearch =
-        searchQuery.trim() === '' ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return matchesCategory && matchesSearch;
+  // Save Toggle handler
+  const handleToggleSave = (id: string) => {
+    setSavedLocationIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
     });
-  }, [locations, selectedCategory, searchQuery]);
+  };
+
+  // Open Share Preview
+  const handleShare = (item: Location) => {
+    router.push({
+      pathname: '/share-preview',
+      params: { locationId: item.id },
+    });
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50" edges={['top']}>
       {/* Sticky Top Header */}
       <View className="bg-slate-50 px-5 pt-3 pb-2 border-b border-slate-200/50 z-10">
-        {/* Welcome Text */}
+        {/* Welcome Text & Suggest Spot Button */}
         <View className="flex-row items-center justify-between mb-2">
           <View>
             <View className="flex-row items-center gap-1.5">
@@ -201,9 +213,14 @@ export default function ExploreScreen() {
             </Text>
           </View>
 
-          <View className="w-10 h-10 rounded-full bg-blue-100 items-center justify-center border border-blue-200">
-            <Compass size={22} color={Colors.primary.DEFAULT} />
-          </View>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setIsSuggestModalVisible(true)}
+            className="flex-row items-center gap-1 bg-blue-600 px-3 py-2 rounded-2xl shadow-sm"
+          >
+            <Plus size={16} color="#ffffff" />
+            <Text className="text-white text-xs font-bold">Add Spot</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Stylized Search Bar */}
@@ -271,46 +288,81 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      {/* Vertical Scrolling Location Cards List */}
-      <FlatList
-        data={filteredLocations}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <LocationCard
-            item={item}
-            onToggleSave={handleToggleSave}
-            onShare={handleShare}
-          />
-        )}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 16,
-          paddingBottom: 28,
-        }}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View className="py-16 items-center justify-center px-4">
-            <View className="p-4 bg-slate-100 rounded-full mb-3">
-              <Search size={32} color="#94a3b8" />
+      {/* Vertical Scrolling Location Cards List with Infinite Scrolling */}
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center py-20">
+          <ActivityIndicator size="large" color={Colors.primary.DEFAULT} />
+          <Text className="text-slate-500 text-xs font-medium mt-3">
+            Loading nearby locations...
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={locations}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <LocationCard
+              item={item}
+              onToggleSave={handleToggleSave}
+              onShare={handleShare}
+            />
+          )}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 16,
+            paddingBottom: 28,
+          }}
+          showsVerticalScrollIndicator={false}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          onEndReachedThreshold={0.5}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={refetch}
+              tintColor={Colors.primary.DEFAULT}
+            />
+          }
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <View className="py-4 items-center justify-center">
+                <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            <View className="py-16 items-center justify-center px-4">
+              <View className="p-4 bg-slate-100 rounded-full mb-3">
+                <Search size={32} color="#94a3b8" />
+              </View>
+              <Text className="text-base font-bold text-slate-800 text-center">
+                No places found
+              </Text>
+              <Text className="text-xs text-slate-500 text-center mt-1 max-w-xs">
+                We couldn't find any locations matching "{searchQuery}". Try searching for something else or reset filters.
+              </Text>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('All');
+                }}
+                className="mt-4 px-4 py-2 bg-blue-600 rounded-xl"
+              >
+                <Text className="text-xs font-semibold text-white">Reset Filters</Text>
+              </TouchableOpacity>
             </View>
-            <Text className="text-base font-bold text-slate-800 text-center">
-              No places found
-            </Text>
-            <Text className="text-xs text-slate-500 text-center mt-1 max-w-xs">
-              We couldn't find any locations matching "{searchQuery}". Try searching for something else or reset filters.
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                setSearchQuery('');
-                setSelectedCategory('All');
-              }}
-              className="mt-4 px-4 py-2 bg-blue-600 rounded-xl"
-            >
-              <Text className="text-xs font-semibold text-white">Reset Filters</Text>
-            </TouchableOpacity>
-          </View>
-        }
+          }
+        />
+      )}
+
+      {/* Suggest a Spot UGC Modal */}
+      <SuggestSpotModal
+        visible={isSuggestModalVisible}
+        onClose={() => setIsSuggestModalVisible(false)}
       />
     </SafeAreaView>
   );

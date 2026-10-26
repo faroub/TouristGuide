@@ -1,0 +1,64 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Category {
+  HISTORICAL
+  CULTURAL
+  SIGHTSEEING
+  RESTAURANT
+  EVENT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  places    Place[]
+
+  @@map("users")
+}
+
+model Place {
+  id              String     @id @default(cuid())
+  title           String
+  description     String
+  category        Category
+  latitude        Float
+  longitude       Float
+  address         String?
+  coverImage      String?
+  rating          Float      @default(0.0)
+  sourceUrl       String?
+  isUserGenerated Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  userId          String?
+  user            User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  shareLogs       ShareLog[]
+
+  @@index([latitude, longitude])
+  @@index([category])
+  @@map("places")
+}
+
+model ShareLog {
+  id        String   @id @default(cuid())
+  placeId   String
+  place     Place    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  platform  String   // e.g., 'instagram', 'whatsapp', 'native_share'
+  sharedAt  DateTime @default(now())
+
+  @@index([placeId])
+  @@map("share_logs")
+}
