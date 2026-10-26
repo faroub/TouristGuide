@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Tabs } from 'expo-router';
-import { Compass, Map, Bookmark } from 'lucide-react-native';
+import { Compass, Map, Bookmark, Award } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
 
 export default function TabsLayout() {
@@ -72,6 +72,21 @@ export default function TabsLayout() {
               }`}
             >
               <Bookmark size={20} color={focused ? '#ffffff' : '#94a3b8'} />
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="passport"
+        options={{
+          title: 'Passport',
+          tabBarIcon: ({ focused }) => (
+            <View
+              className={`px-3.5 py-1.5 rounded-full items-center justify-center ${
+                focused ? 'bg-[#FF5A5F] shadow-sm shadow-[#FF5A5F]' : 'bg-transparent'
+              }`}
+            >
+              <Award size={20} color={focused ? '#ffffff' : '#94a3b8'} />
             </View>
           ),
         }}

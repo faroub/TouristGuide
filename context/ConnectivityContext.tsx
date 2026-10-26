@@ -5,11 +5,17 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
-import { View, Text, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, Animated, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WifiOff, Wifi, AlertCircle, X } from 'lucide-react-native';
+
+import {
+  getOfflineQueue,
+  clearOfflineQueue,
+} from '@/services/offlineQueue';
+import { API_BASE_URL } from '@/services/api';
 
 interface ConnectivityContextType {
   isConnected: boolean;
@@ -38,6 +44,36 @@ export const ConnectivityProvider: React.FC<ConnectivityProviderProps> = ({
   const bannerTranslateY = useRef(new Animated.Value(-120)).current;
   const toastTranslateY = useRef(new Animated.Value(120)).current;
 
+  // Rule 3: Process Pending Offline Queue Sequentially when Back Online
+  const syncOfflineQueue = async () => {
+    try {
+      const queue = await getOfflineQueue();
+      if (queue.length === 0) return;
+
+      console.log(`⚡ Processing ${queue.length} pending offline queue spot submissions...`);
+
+      for (const item of queue) {
+        try {
+          await fetch(`${API_BASE_URL}/api/v1/places`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item.payload),
+          });
+        } catch (err) {
+          console.warn(`Failed to sync queued item ${item.id}:`, err);
+        }
+      }
+
+      await clearOfflineQueue();
+      Alert.alert(
+        'Synced Successfully! 🎉',
+        '✨ Your discoveries have been synced to the world!'
+      );
+    } catch (error) {
+      console.error('Error executing offline queue sync:', error);
+    }
+  };
+
   // Listen to NetInfo Live Network State
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
@@ -53,6 +89,7 @@ export const ConnectivityProvider: React.FC<ConnectivityProviderProps> = ({
           // Transitioned from Offline -> Online
           setShowBackOnlineBanner(true);
           wasOfflineRef.current = false;
+          syncOfflineQueue();
         }
       }
     });
