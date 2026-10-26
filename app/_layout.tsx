@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Stack } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import '../global.css';
 
 export default function RootLayout() {
+  const router = useRouter();
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -17,12 +19,29 @@ export default function RootLayout() {
       })
   );
 
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, []);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const hasSeen = await AsyncStorage.getItem('hasSeenOnboarding');
+      if (hasSeen !== 'true') {
+        router.replace('/onboarding');
+      }
+    } catch (error) {
+      console.warn('AsyncStorage checkOnboardingStatus error:', error);
+    }
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="auto" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="onboarding" />
         <Stack.Screen name="share-preview" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="add-spot" options={{ presentation: 'modal' }} />
       </Stack>
     </QueryClientProvider>
   );
