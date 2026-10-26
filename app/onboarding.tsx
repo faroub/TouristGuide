@@ -30,6 +30,7 @@ import {
   ChevronRight,
   Send,
 } from 'lucide-react-native';
+import { Colors } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -41,25 +42,26 @@ interface OnboardingSlide {
   renderGraphic: () => React.ReactNode;
 }
 
-const SLIDES: OnboardingSlide[] = [
+// Stitch Canvas Slide Sequences
+const STITCH_SLIDES: OnboardingSlide[] = [
   {
     id: 'slide-1',
     title: 'Discover the Unseen',
     subtitle:
       'Find hidden architectural gems, ancient monuments, and secret scenic spots near you with real-time location intelligence.',
-    gradientColors: ['#00D1C4', '#1E1B4B'],
+    gradientColors: [Colors.secondary.DEFAULT, '#1E1B4B'], // Electric Teal -> Deep Indigo
     renderGraphic: () => (
       <View className="items-center justify-center relative">
-        <View className="w-56 h-56 rounded-full bg-teal-400/20 items-center justify-center border-2 border-teal-300/30">
-          <View className="w-40 h-40 rounded-full bg-teal-400/30 items-center justify-center border border-teal-200/40">
-            <Compass size={80} color="#ffffff" />
+        <View className="w-60 h-60 rounded-full bg-teal/20 items-center justify-center border-2 border-teal/30 shadow-2xl">
+          <View className="w-44 h-44 rounded-full bg-teal/30 items-center justify-center border border-teal/40">
+            <Compass size={84} color="#ffffff" />
           </View>
         </View>
-        <View className="absolute top-2 right-6 bg-white p-3 rounded-2xl shadow-xl">
-          <MapPin size={24} color="#00D1C4" />
+        <View className="absolute top-2 right-4 bg-white p-3.5 rounded-2xl shadow-xl">
+          <MapPin size={26} color={Colors.secondary.DEFAULT} />
         </View>
-        <View className="absolute bottom-4 left-6 bg-[#FF5A5F] p-3 rounded-2xl shadow-xl">
-          <Sparkles size={24} color="#ffffff" />
+        <View className="absolute bottom-4 left-4 bg-coral p-3.5 rounded-2xl shadow-xl">
+          <Sparkles size={26} color="#ffffff" />
         </View>
       </View>
     ),
@@ -69,19 +71,19 @@ const SLIDES: OnboardingSlide[] = [
     title: 'Taste & Culture',
     subtitle:
       'Immerse yourself in award-winning local dining, authentic heritage, and vibrant city street festivals.',
-    gradientColors: ['#F59E0B', '#881337'],
+    gradientColors: [Colors.themes.dining, '#881337'], // Fiery Amber -> Deep Rose
     renderGraphic: () => (
       <View className="items-center justify-center relative">
-        <View className="w-56 h-56 rounded-full bg-amber-400/20 items-center justify-center border-2 border-amber-300/30">
-          <View className="w-40 h-40 rounded-full bg-amber-400/30 items-center justify-center border border-amber-200/40">
-            <Utensils size={72} color="#ffffff" />
+        <View className="w-60 h-60 rounded-full bg-amber/20 items-center justify-center border-2 border-amber/30 shadow-2xl">
+          <View className="w-44 h-44 rounded-full bg-amber/30 items-center justify-center border border-amber/40">
+            <Utensils size={76} color="#ffffff" />
           </View>
         </View>
-        <View className="absolute top-2 left-6 bg-[#8B5CF6] p-3 rounded-2xl shadow-xl">
-          <Landmark size={24} color="#ffffff" />
+        <View className="absolute top-2 left-4 bg-purple p-3.5 rounded-2xl shadow-xl">
+          <Landmark size={26} color="#ffffff" />
         </View>
-        <View className="absolute bottom-4 right-6 bg-amber-400 p-3 rounded-2xl shadow-xl">
-          <Sparkles size={24} color="#ffffff" />
+        <View className="absolute bottom-4 right-4 bg-amber p-3.5 rounded-2xl shadow-xl">
+          <Sparkles size={26} color="#ffffff" />
         </View>
       </View>
     ),
@@ -91,19 +93,19 @@ const SLIDES: OnboardingSlide[] = [
     title: 'Share Your Journey',
     subtitle:
       'Generate stunning sunset story cards, contribute community discoveries, and inspire travelers across the globe.',
-    gradientColors: ['#FF5A5F', '#581C87'],
+    gradientColors: [Colors.primary.DEFAULT, '#581C87'], // Energetic Coral -> Deep Purple
     renderGraphic: () => (
       <View className="items-center justify-center relative">
-        <View className="w-56 h-56 rounded-full bg-rose-400/20 items-center justify-center border-2 border-rose-300/30">
-          <View className="w-40 h-40 rounded-full bg-rose-400/30 items-center justify-center border border-rose-200/40">
-            <Share2 size={72} color="#ffffff" />
+        <View className="w-60 h-60 rounded-full bg-coral/20 items-center justify-center border-2 border-coral/30 shadow-2xl">
+          <View className="w-44 h-44 rounded-full bg-coral/30 items-center justify-center border border-coral/40">
+            <Share2 size={76} color="#ffffff" />
           </View>
         </View>
-        <View className="absolute top-2 right-6 bg-[#00D1C4] p-3 rounded-2xl shadow-xl">
-          <Send size={24} color="#ffffff" />
+        <View className="absolute top-2 right-4 bg-teal p-3.5 rounded-2xl shadow-xl">
+          <Send size={26} color="#ffffff" />
         </View>
-        <View className="absolute bottom-4 left-6 bg-[#FF5A5F] p-3 rounded-2xl shadow-xl">
-          <Heart size={24} color="#ffffff" fill="#ffffff" />
+        <View className="absolute bottom-4 left-4 bg-coral p-3.5 rounded-2xl shadow-xl">
+          <Heart size={26} color="#ffffff" fill="#ffffff" />
         </View>
       </View>
     ),
@@ -115,14 +117,14 @@ export default function OnboardingScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList | null>(null);
 
-  // Gentle Pulse Scale for Final Button
+  // Button Pulse Scale Animation
   const buttonScale = useSharedValue(1);
 
   React.useEffect(() => {
-    if (activeIndex === SLIDES.length - 1) {
+    if (activeIndex === STITCH_SLIDES.length - 1) {
       buttonScale.value = withRepeat(
         withSequence(
-          withTiming(1.05, { duration: 900, easing: Easing.ease }),
+          withTiming(1.04, { duration: 900, easing: Easing.ease }),
           withTiming(1, { duration: 900, easing: Easing.ease })
         ),
         -1,
@@ -137,7 +139,6 @@ export default function OnboardingScreen() {
     transform: [{ scale: buttonScale.value }],
   }));
 
-  // Slide viewable items change callback
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index !== null) {
@@ -148,7 +149,6 @@ export default function OnboardingScreen() {
 
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
-  // Complete Onboarding Flow
   const handleFinishOnboarding = async () => {
     try {
       await AsyncStorage.setItem('hasSeenOnboarding', 'true');
@@ -159,7 +159,7 @@ export default function OnboardingScreen() {
   };
 
   const handleNextPress = () => {
-    if (activeIndex < SLIDES.length - 1) {
+    if (activeIndex < STITCH_SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({
         index: activeIndex + 1,
         animated: true,
@@ -169,11 +169,11 @@ export default function OnboardingScreen() {
     }
   };
 
-  const currentSlide = SLIDES[activeIndex];
+  const currentSlide = STITCH_SLIDES[activeIndex];
 
   return (
     <View className="flex-1 bg-slate-950">
-      {/* Background Gradient Animated Interpolation Container */}
+      {/* 1. Root Canvas: Vibrant Multi-Color Gradient Element */}
       <LinearGradient
         colors={currentSlide.gradientColors}
         start={{ x: 0, y: 0 }}
@@ -182,11 +182,11 @@ export default function OnboardingScreen() {
       />
 
       <SafeAreaView className="flex-1 justify-between py-6">
-        {/* Top Navigation & Pagination Bar */}
+        {/* 2. Header Component: Asymmetrical Horizontal Pagination Bar */}
         <View className="px-6 flex-row items-center justify-between pt-2">
-          {/* Dynamic Morphing Pagination Dots */}
+          {/* Dynamic Width Prolonged Pill Indicator */}
           <View className="flex-row items-center gap-2">
-            {SLIDES.map((slide, index) => {
+            {STITCH_SLIDES.map((slide, index) => {
               const isActive = index === activeIndex;
               return (
                 <View
@@ -199,24 +199,24 @@ export default function OnboardingScreen() {
             })}
           </View>
 
-          {/* Skip Button */}
-          {activeIndex < SLIDES.length - 1 && (
+          {/* Skip Action Target */}
+          {activeIndex < STITCH_SLIDES.length - 1 && (
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={handleFinishOnboarding}
-              className="px-3.5 py-1.5 rounded-full bg-black/20 border border-white/20"
+              className="px-4 py-1.5 rounded-full bg-black/20 border border-white/20"
             >
-              <Text className="text-white text-xs font-bold uppercase tracking-wider">
+              <Text className="text-white text-xs font-black uppercase tracking-wider">
                 Skip
               </Text>
             </TouchableOpacity>
           )}
         </View>
 
-        {/* Horizontal Carousel List */}
+        {/* Mid Section Carousel */}
         <FlatList
           ref={flatListRef}
-          data={SLIDES}
+          data={STITCH_SLIDES}
           keyExtractor={(item) => item.id}
           horizontal
           pagingEnabled
@@ -228,15 +228,18 @@ export default function OnboardingScreen() {
               style={{ width: SCREEN_WIDTH }}
               className="flex-1 justify-center items-center px-8"
             >
-              {/* Slide Graphic */}
+              {/* 3. Mid Section: Elevated Floating Vector Artwork */}
               <View className="mb-8">{item.renderGraphic()}</View>
 
-              {/* Text Container */}
+              {/* 4. Content Block: Heavy Typography Layers */}
               <View className="items-center">
                 <Text className="text-3xl font-black text-white text-center leading-tight tracking-tight">
                   {item.title}
                 </Text>
-                <Text className="text-slate-200 text-sm text-center mt-3 leading-relaxed font-medium max-w-xs">
+                <Text
+                  className="text-slate-200 text-sm text-center mt-3 leading-relaxed font-medium max-w-xs"
+                  numberOfLines={2}
+                >
                   {item.subtitle}
                 </Text>
               </View>
@@ -244,31 +247,21 @@ export default function OnboardingScreen() {
           )}
         />
 
-        {/* Bottom Navigation Action Button */}
+        {/* 5. Primary Action Button: Fixed-Bottom Energetic Coral Button */}
         <View className="px-8 pb-4">
           <Animated.View style={animatedButtonStyle}>
             <TouchableOpacity
               activeOpacity={0.88}
               onPress={handleNextPress}
-              className={`py-4 rounded-2xl flex-row items-center justify-center gap-2 shadow-2xl ${
-                activeIndex === SLIDES.length - 1
-                  ? 'bg-[#FF5A5F] shadow-[#FF5A5F]/50 border border-white/30'
-                  : 'bg-white shadow-black/20'
-              }`}
+              className="py-4 rounded-fluid bg-coral flex-row items-center justify-center gap-2 shadow-2xl shadow-coral/50 border border-white/30"
             >
-              <Text
-                className={`text-base font-black tracking-wide ${
-                  activeIndex === SLIDES.length - 1
-                    ? 'text-white'
-                    : 'text-slate-900'
-                }`}
-              >
-                {activeIndex === SLIDES.length - 1
+              <Text className="text-white text-base font-black tracking-wide uppercase">
+                {activeIndex === STITCH_SLIDES.length - 1
                   ? "Let's Explore! ✨"
                   : 'Next'}
               </Text>
-              {activeIndex < SLIDES.length - 1 && (
-                <ChevronRight size={20} color="#0F172A" />
+              {activeIndex < STITCH_SLIDES.length - 1 && (
+                <ChevronRight size={20} color="#ffffff" />
               )}
             </TouchableOpacity>
           </Animated.View>
