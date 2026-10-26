@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { prisma } from './db.js';
 import { exploreRoutes } from './routes/explore.js';
 import { uploadRoutes } from './routes/upload.js';
+import { assistantRoutes } from './routes/assistant.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ export async function buildServer() {
   // Register API Routes
   await app.register(exploreRoutes);
   await app.register(uploadRoutes);
+  await app.register(assistantRoutes);
 
   // Health Check Endpoint
   app.get('/health', async (_request, reply) => {

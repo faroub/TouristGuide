@@ -33,6 +33,7 @@ import {
 } from '@/constants/locations';
 import { Colors } from '@/constants/theme';
 import { useExploreInfiniteQuery } from '@/services/api';
+import { AIAssistantFAB } from '@/components/AIAssistantFAB';
 
 // --- Category Color Map ---
 const CATEGORY_COLOR_MAP: Record<CategoryType, { bg: string; border: string }> = {
@@ -213,7 +214,7 @@ export default function ExploreScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F7F9FA]">
+    <View className="flex-1 bg-[#F7F9FA] relative">
       {/* Top Header Container with Lush Electric Teal -> Deep Blue Gradient */}
       <LinearGradient
         colors={['#00D1C4', '#1E1B4B']}
@@ -339,7 +340,7 @@ export default function ExploreScreen() {
           contentContainerStyle={{
             paddingHorizontal: 20,
             paddingTop: 8,
-            paddingBottom: 28,
+            paddingBottom: 80,
           }}
           showsVerticalScrollIndicator={false}
           onEndReached={() => {
@@ -387,6 +388,9 @@ export default function ExploreScreen() {
           }
         />
       )}
+
+      {/* Floating AI Tour Guide Assistant FAB */}
+      <AIAssistantFAB />
     </View>
   );
 }

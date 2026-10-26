@@ -28,6 +28,7 @@ import {
   DEFAULT_CITY_COORDINATES,
 } from '@/constants/locations';
 import { Colors } from '@/constants/theme';
+import { AIAssistantFAB } from '@/components/AIAssistantFAB';
 
 export default function MapScreen() {
   const mapRef = useRef<MapView | null>(null);
@@ -213,7 +214,7 @@ export default function MapScreen() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={requestUserLocation}
-          className="absolute bottom-6 right-6 z-20 bg-white p-3.5 rounded-full shadow-lg shadow-slate-300 border border-slate-100 items-center justify-center"
+          className="absolute bottom-6 left-6 z-20 bg-white p-3.5 rounded-full shadow-lg shadow-slate-300 border border-slate-100 items-center justify-center"
         >
           {isLoadingLocation ? (
             <ActivityIndicator size="small" color="#FF5A5F" />
@@ -221,6 +222,12 @@ export default function MapScreen() {
             <Navigation size={22} color="#FF5A5F" />
           )}
         </TouchableOpacity>
+
+        {/* Floating AI Tour Guide Assistant FAB */}
+        <AIAssistantFAB
+          latitude={userCoordinates?.latitude || region.latitude}
+          longitude={userCoordinates?.longitude || region.longitude}
+        />
 
         {/* Sliding Bottom Modal Overlay */}
         <Modal
