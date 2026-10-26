@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ConnectivityProvider } from '@/context/ConnectivityContext';
 import '../global.css';
 
 export default function RootLayout() {
@@ -38,13 +39,15 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <StatusBar style="auto" />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="share-preview" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="add-spot" options={{ presentation: 'modal' }} />
-        </Stack>
+        <ConnectivityProvider>
+          <StatusBar style="auto" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="share-preview" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="add-spot" options={{ presentation: 'modal' }} />
+          </Stack>
+        </ConnectivityProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
