@@ -1,8 +1,10 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
 import dotenv from 'dotenv';
 import { prisma } from './db.js';
 import { exploreRoutes } from './routes/explore.js';
+import { uploadRoutes } from './routes/upload.js';
 
 dotenv.config();
 
@@ -21,8 +23,17 @@ export async function buildServer() {
     origin: true,
   });
 
+  // Register Multipart Plugin for File Uploads (Max 5MB)
+  await app.register(multipart, {
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB limit
+      files: 1,
+    },
+  });
+
   // Register API Routes
   await app.register(exploreRoutes);
+  await app.register(uploadRoutes);
 
   // Health Check Endpoint
   app.get('/health', async (_request, reply) => {

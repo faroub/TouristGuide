@@ -14,6 +14,7 @@ import { X, PlusCircle, MapPin } from 'lucide-react-native';
 import { CategoryType, CATEGORIES } from '@/constants/locations';
 import { Colors } from '@/constants/theme';
 import { useCreatePlaceMutation } from '@/services/api';
+import { UGCImageSelector } from '@/components/UGCImageSelector';
 
 interface SuggestSpotModalProps {
   visible: boolean;
@@ -27,6 +28,7 @@ export const SuggestSpotModal: React.FC<SuggestSpotModalProps> = ({
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<Exclude<CategoryType, 'All'>>('Historical');
   const [description, setDescription] = useState('');
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
 
   const createPlaceMutation = useCreatePlaceMutation();
 
@@ -46,12 +48,14 @@ export const SuggestSpotModal: React.FC<SuggestSpotModalProps> = ({
         title: title.trim(),
         category,
         description: description.trim(),
+        imageUrl: selectedImageUri || undefined,
       },
       {
         onSuccess: () => {
           Alert.alert('Success! 🎉', 'Your suggested spot has been added and shared with the community!');
           setTitle('');
           setDescription('');
+          setSelectedImageUri(null);
           onClose();
         },
         onError: (error) => {
@@ -114,7 +118,7 @@ export const SuggestSpotModal: React.FC<SuggestSpotModalProps> = ({
                       onPress={() => setCategory(cat)}
                       className={`px-3.5 py-2 rounded-xl border ${
                         isSelected
-                          ? 'bg-blue-600 border-blue-600'
+                          ? 'bg-[#FF5A5F] border-[#FF5A5F]'
                           : 'bg-slate-50 border-slate-200'
                       }`}
                     >
@@ -130,6 +134,12 @@ export const SuggestSpotModal: React.FC<SuggestSpotModalProps> = ({
                 })}
               </View>
             </View>
+
+            {/* UGC Image Selector Component */}
+            <UGCImageSelector
+              imageUri={selectedImageUri}
+              onSelectImage={setSelectedImageUri}
+            />
 
             {/* Description Input */}
             <View className="mb-4">
@@ -153,7 +163,7 @@ export const SuggestSpotModal: React.FC<SuggestSpotModalProps> = ({
               activeOpacity={0.8}
               onPress={handleSubmit}
               disabled={createPlaceMutation.isPending}
-              className="bg-blue-600 py-4 rounded-2xl items-center justify-center flex-row gap-2 mt-2 mb-4 shadow-sm"
+              className="bg-[#FF5A5F] py-4 rounded-2xl items-center justify-center flex-row gap-2 mt-2 mb-6 shadow-md shadow-[#FF5A5F]/30"
             >
               {createPlaceMutation.isPending ? (
                 <ActivityIndicator size="small" color="#ffffff" />

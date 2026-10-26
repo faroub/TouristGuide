@@ -11,22 +11,57 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F7F9FA"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.touristguide.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "TouristGuide uses your location to discover nearby points of interest and display interactive map markers.",
+        "NSCameraUsageDescription": "TouristGuide needs camera access to let you capture and upload photos of newly discovered locations.",
+        "NSPhotoLibraryUsageDescription": "TouristGuide needs photo library access to select cover images for community spot submissions."
+      }
     },
     "android": {
+      "package": "com.touristguide.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "backgroundColor": "#FF5A5F"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "TouristGuide uses your location to show nearby spots and position your location on the map."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "TouristGuide accesses your photos so you can choose a cover image for community spots.",
+          "cameraPermission": "TouristGuide accesses your camera so you can take photos of new places."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "TouristGuide needs access to your media library to save vibrant story cards to your photo gallery.",
+          "savePhotosPermission": "TouristGuide saves story card previews to your photo library."
+        }
+      ]
     ]
   }
 }

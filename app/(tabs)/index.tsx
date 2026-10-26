@@ -33,7 +33,6 @@ import {
 } from '@/constants/locations';
 import { Colors } from '@/constants/theme';
 import { useExploreInfiniteQuery } from '@/services/api';
-import { SuggestSpotModal } from '@/components/SuggestSpotModal';
 
 // --- Category Color Map ---
 const CATEGORY_COLOR_MAP: Record<CategoryType, { bg: string; border: string }> = {
@@ -169,7 +168,6 @@ export default function ExploreScreen() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [savedLocationIds, setSavedLocationIds] = useState<Set<string>>(new Set(['loc-001']));
-  const [isSuggestModalVisible, setIsSuggestModalVisible] = useState<boolean>(false);
 
   // TanStack Query Infinite Scrolling Hook
   const {
@@ -238,9 +236,10 @@ export default function ExploreScreen() {
               </Text>
             </View>
 
+            {/* Navigates to Add New Discovery Screen */}
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() => setIsSuggestModalVisible(true)}
+              onPress={() => router.push('/add-spot')}
               className="flex-row items-center gap-1.5 bg-[#FF5A5F] px-3.5 py-2 rounded-2xl shadow-md shadow-[#FF5A5F]/40"
             >
               <Plus size={16} color="#ffffff" />
@@ -388,12 +387,6 @@ export default function ExploreScreen() {
           }
         />
       )}
-
-      {/* Suggest a Spot UGC Modal */}
-      <SuggestSpotModal
-        visible={isSuggestModalVisible}
-        onClose={() => setIsSuggestModalVisible(false)}
-      />
     </View>
   );
 }
