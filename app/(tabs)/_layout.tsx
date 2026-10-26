@@ -1,25 +1,33 @@
 import React from 'react';
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Compass, Map, Bookmark } from 'lucide-react-native';
+import { Colors } from '@/constants/theme';
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#64748b',
+        tabBarActiveTintColor: Colors.primary.DEFAULT,
+        tabBarInactiveTintColor: '#94a3b8',
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopWidth: 1,
           borderTopColor: '#f1f5f9',
-          height: 60,
-          paddingBottom: 8,
+          height: 68,
+          paddingBottom: 10,
           paddingTop: 8,
+          elevation: 10,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
+          fontSize: 11,
+          fontWeight: '700',
+          marginTop: 2,
         },
       }}
     >
@@ -27,8 +35,14 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color, size }) => (
-            <Compass size={size} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <View
+              className={`px-3.5 py-1.5 rounded-full items-center justify-center ${
+                focused ? 'bg-[#FF5A5F] shadow-sm shadow-[#FF5A5F]' : 'bg-transparent'
+              }`}
+            >
+              <Compass size={20} color={focused ? '#ffffff' : '#94a3b8'} />
+            </View>
           ),
         }}
       />
@@ -36,8 +50,14 @@ export default function TabsLayout() {
         name="map"
         options={{
           title: 'Map',
-          tabBarIcon: ({ color, size }) => (
-            <Map size={size} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <View
+              className={`px-3.5 py-1.5 rounded-full items-center justify-center ${
+                focused ? 'bg-[#FF5A5F] shadow-sm shadow-[#FF5A5F]' : 'bg-transparent'
+              }`}
+            >
+              <Map size={20} color={focused ? '#ffffff' : '#94a3b8'} />
+            </View>
           ),
         }}
       />
@@ -45,8 +65,14 @@ export default function TabsLayout() {
         name="saved"
         options={{
           title: 'Saved',
-          tabBarIcon: ({ color, size }) => (
-            <Bookmark size={size} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <View
+              className={`px-3.5 py-1.5 rounded-full items-center justify-center ${
+                focused ? 'bg-[#FF5A5F] shadow-sm shadow-[#FF5A5F]' : 'bg-transparent'
+              }`}
+            >
+              <Bookmark size={20} color={focused ? '#ffffff' : '#94a3b8'} />
+            </View>
           ),
         }}
       />

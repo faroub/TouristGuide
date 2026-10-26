@@ -1,29 +1,30 @@
 export const Colors = {
   primary: {
-    DEFAULT: '#2563eb', // Blue 600
-    light: '#dbeafe',   // Blue 100
-    dark: '#1d4ed8',    // Blue 700
+    DEFAULT: '#FF5A5F', // Energetic Coral/Orange
+    light: '#FF7E82',
+    dark: '#E03E43',
   },
   secondary: {
-    DEFAULT: '#0f172a', // Slate 900
-    muted: '#64748b',   // Slate 500
+    DEFAULT: '#00D1C4', // Electric Teal/Cyan
+    light: '#33E0D6',
+    dark: '#00A89E',
   },
   accent: {
-    star: '#d97706',    // Amber 600
-    saved: '#2563eb',   // Blue 600
-    danger: '#e11d48',  // Rose 600
+    star: '#FFB800',    // Vivid Amber
+    saved: '#FF5A5F',   // Coral
+    danger: '#FF3366',  // Vivid Rose
   },
   markers: {
-    user: '#2563eb',      // Primary user location marker
-    historical: '#d97706',// Amber marker
-    cultural: '#7c3aed', // Purple marker
-    dining: '#e11d48',   // Rose marker
-    events: '#059669',   // Emerald marker
-    default: '#2563eb',
+    user: '#00D1C4',      // Electric Teal
+    historical: '#FFB800',// Vibrant Amber
+    cultural: '#A855F7', // Electric Purple
+    dining: '#FF5A5F',   // Coral
+    events: '#10B981',   // Emerald
+    default: '#FF5A5F',
   },
   background: {
-    light: '#f8fafc',
-    card: '#ffffff',
+    warm: '#F7F9FA',
+    card: '#FFFFFF',
     overlay: 'rgba(15, 23, 42, 0.4)',
   },
 } as const;

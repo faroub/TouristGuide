@@ -6,12 +6,18 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#2563eb',
-          50: '#eff6ff',
-          100: '#dbeafe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
+          DEFAULT: '#FF5A5F', // Energetic Coral/Orange
+          light: '#FF7E82',
+          dark: '#E03E43',
+        },
+        secondary: {
+          DEFAULT: '#00D1C4', // Electric Teal/Cyan
+          light: '#33E0D6',
+          dark: '#00A89E',
+        },
+        background: {
+          warm: '#F7F9FA',  // Warm Off-white
+          card: '#FFFFFF',
         },
       },
     },

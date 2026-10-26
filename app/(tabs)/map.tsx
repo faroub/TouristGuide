@@ -7,10 +7,9 @@ import {
   Image,
   ActivityIndicator,
   Modal,
-  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Callout, Region } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
 import * as ExpoLocation from 'expo-location';
 import {
   Search,
@@ -52,7 +51,6 @@ export default function MapScreen() {
     longitudeDelta: 0.05,
   });
 
-  // Request location permission on load
   useEffect(() => {
     requestUserLocation();
   }, []);
@@ -93,7 +91,6 @@ export default function MapScreen() {
     }
   };
 
-  // Filter mock locations based on search overlay
   const visibleLocations = MOCK_LOCATIONS.filter((loc) =>
     searchQuery.trim() === ''
       ? true
@@ -101,7 +98,6 @@ export default function MapScreen() {
         loc.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Center map on search match
   const handleSearchSubmit = () => {
     if (visibleLocations.length > 0) {
       const target = visibleLocations[0];
@@ -116,7 +112,6 @@ export default function MapScreen() {
     }
   };
 
-  // Marker Pin color helper
   const getCategoryMarkerColor = (category: string) => {
     switch (category) {
       case 'Historical':
@@ -133,7 +128,7 @@ export default function MapScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F7F9FA]" edges={['top']}>
       {/* Map Container */}
       <View className="flex-1 relative">
         <MapView
@@ -143,7 +138,6 @@ export default function MapScreen() {
           showsUserLocation={permissionGranted === true}
           showsMyLocationButton={false}
         >
-          {/* User Location Marker (fallback if custom user pin needed) */}
           {userCoordinates && (
             <Marker
               coordinate={{
@@ -155,7 +149,6 @@ export default function MapScreen() {
             />
           )}
 
-          {/* Location Markers */}
           {visibleLocations.map((location) => (
             <Marker
               key={location.id}
@@ -173,10 +166,10 @@ export default function MapScreen() {
           ))}
         </MapView>
 
-        {/* Floating Top Search Bar Overlay */}
+        {/* Floating Top Search Bar */}
         <View className="absolute top-4 left-4 right-4 z-20">
           <View className="flex-row items-center bg-white/95 backdrop-blur-md px-3.5 py-2.5 rounded-2xl border border-slate-200 shadow-md">
-            <Search size={18} color="#64748b" />
+            <Search size={18} color="#00D1C4" />
             <TextInput
               className="flex-1 ml-2.5 text-slate-800 text-sm font-medium"
               placeholder="Search map location or category..."
@@ -197,13 +190,13 @@ export default function MapScreen() {
             )}
           </View>
 
-          {/* Non-intrusive Location Permission Alert Banner */}
+          {/* Location Permission Alert */}
           {permissionDeniedBanner && (
             <View className="mt-2 bg-amber-50/95 backdrop-blur-md p-3 rounded-2xl border border-amber-200 shadow-sm flex-row items-center justify-between">
               <View className="flex-row items-center gap-2 flex-1 pr-2">
-                <AlertCircle size={18} color={Colors.accent.star} />
-                <Text className="text-amber-900 text-xs font-medium flex-1">
-                  Location access disabled. Showing standard city map.
+                <AlertCircle size={18} color="#FFB800" />
+                <Text className="text-amber-900 text-xs font-semibold flex-1">
+                  Location access disabled. Showing standard map.
                 </Text>
               </View>
               <TouchableOpacity
@@ -220,16 +213,16 @@ export default function MapScreen() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={requestUserLocation}
-          className="absolute bottom-6 right-6 z-20 bg-white p-3.5 rounded-full shadow-lg border border-slate-100 items-center justify-center"
+          className="absolute bottom-6 right-6 z-20 bg-white p-3.5 rounded-full shadow-lg shadow-slate-300 border border-slate-100 items-center justify-center"
         >
           {isLoadingLocation ? (
-            <ActivityIndicator size="small" color={Colors.primary.DEFAULT} />
+            <ActivityIndicator size="small" color="#FF5A5F" />
           ) : (
-            <Navigation size={22} color={Colors.primary.DEFAULT} />
+            <Navigation size={22} color="#FF5A5F" />
           )}
         </TouchableOpacity>
 
-        {/* Sliding Bottom Modal Overlay for Selected Location */}
+        {/* Sliding Bottom Modal Overlay */}
         <Modal
           visible={selectedLocation !== null}
           transparent={true}
@@ -246,10 +239,8 @@ export default function MapScreen() {
                 activeOpacity={1}
                 className="bg-white rounded-t-3xl p-5 shadow-2xl border-t border-slate-100"
               >
-                {/* Pull Indicator Bar */}
                 <View className="w-12 h-1.5 bg-slate-200 rounded-full self-center mb-4" />
 
-                {/* Cover Image */}
                 <View className="relative h-44 w-full bg-slate-200 rounded-2xl overflow-hidden mb-4">
                   {!modalImageError ? (
                     <Image
@@ -259,15 +250,14 @@ export default function MapScreen() {
                       onError={() => setModalImageError(true)}
                     />
                   ) : (
-                    <View className="w-full h-full bg-slate-800 items-center justify-center">
-                      <Compass size={32} color="#94a3b8" />
+                    <View className="w-full h-full bg-slate-900 items-center justify-center">
+                      <Compass size={32} color="#00D1C4" />
                       <Text className="text-slate-400 text-xs mt-1">
                         Image unavailable
                       </Text>
                     </View>
                   )}
 
-                  {/* Close Overlay Button */}
                   <TouchableOpacity
                     onPress={() => setSelectedLocation(null)}
                     className="absolute top-3 right-3 bg-slate-900/70 p-2 rounded-full"
@@ -275,48 +265,40 @@ export default function MapScreen() {
                     <X size={16} color="#ffffff" />
                   </TouchableOpacity>
 
-                  {/* Category Tag */}
-                  <View className="absolute bottom-3 left-3 bg-slate-900/80 px-3 py-1 rounded-full">
-                    <Text className="text-white text-xs font-semibold">
+                  <View className="absolute bottom-3 left-3 bg-[#FF5A5F] px-3 py-1 rounded-full">
+                    <Text className="text-white text-xs font-bold uppercase tracking-wide">
                       {selectedLocation.category}
                     </Text>
                   </View>
                 </View>
 
-                {/* Title & Rating */}
                 <View className="flex-row items-start justify-between">
-                  <Text className="text-xl font-bold text-slate-900 flex-1 mr-2 leading-tight">
+                  <Text className="text-xl font-black text-slate-900 flex-1 mr-2 leading-tight">
                     {selectedLocation.title}
                   </Text>
-                  <View className="flex-row items-center bg-amber-50 px-2 py-1 rounded-lg border border-amber-200/60">
-                    <Star size={13} color={Colors.accent.star} fill={Colors.accent.star} />
-                    <Text className="text-xs font-bold text-amber-900 ml-1">
+                  <View className="flex-row items-center bg-amber-50 px-2.5 py-1 rounded-xl border border-amber-200/80">
+                    <Star size={13} color="#FFB800" fill="#FFB800" />
+                    <Text className="text-xs font-extrabold text-amber-900 ml-1">
                       {selectedLocation.rating}
                     </Text>
                   </View>
                 </View>
 
-                {/* Distance Badge */}
                 <View className="flex-row items-center gap-1 mt-2">
-                  <MapPin size={14} color={Colors.primary.DEFAULT} />
-                  <Text className="text-xs font-medium text-slate-500">
+                  <MapPin size={14} color="#00D1C4" />
+                  <Text className="text-xs font-bold text-slate-500">
                     {selectedLocation.distanceFormatted}
                   </Text>
                 </View>
 
-                {/* Excerpt */}
                 <Text className="text-slate-600 text-xs mt-2 leading-relaxed" numberOfLines={2}>
                   {selectedLocation.excerpt}
                 </Text>
 
-                {/* View Details Action Button */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  onPress={() => {
-                    setSelectedLocation(null);
-                    // Detail navigation handler
-                  }}
-                  className="mt-4 bg-blue-600 py-3.5 rounded-2xl items-center justify-center flex-row gap-2 shadow-sm"
+                  onPress={() => setSelectedLocation(null)}
+                  className="mt-4 bg-[#FF5A5F] py-3.5 rounded-2xl items-center justify-center flex-row gap-2 shadow-md shadow-[#FF5A5F]/30"
                 >
                   <Text className="text-white text-sm font-bold">View Details</Text>
                   <ExternalLink size={16} color="#ffffff" />

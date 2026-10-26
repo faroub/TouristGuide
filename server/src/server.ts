@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import dotenv from 'dotenv';
 import { prisma } from './db.js';
+import { exploreRoutes } from './routes/explore.js';
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ export async function buildServer() {
   await app.register(cors, {
     origin: true,
   });
+
+  // Register API Routes
+  await app.register(exploreRoutes);
 
   // Health Check Endpoint
   app.get('/health', async (_request, reply) => {
